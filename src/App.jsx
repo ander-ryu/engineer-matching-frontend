@@ -32,7 +32,41 @@ function HomePage() {
 }
 
 function EngineerPage() {
-  return <h2>这里是工程师管理页面</h2>;
+  const engineers = [
+    { id: 1, name: "张三", gender: "男", skill: "Java", status: "在职" },
+    { id: 2, name: "李四", gender: "女", skill: "React", status: "待命" },
+    { id: 3, name: "王五", gender: "男", skill: "Python", status: "派遣中" },
+    { id: 4, name: "赵六", gender: "女", skill: "Aws", status: "在职" },
+  ];
+
+  return (
+    <div style={{ marginTop: "20px" }}>
+      <h2>工程师管理页面</h2>
+
+      <table style={tableStyle}>
+        <thead>
+          <tr>
+            <th style={thStyle}>编号</th>
+            <th style={thStyle}>姓名</th>
+            <th style={thStyle}>性别</th>
+            <th style={thStyle}>技能</th>
+            <th style={thStyle}>状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          {engineers.map((engineer) => (
+            <tr key={engineer.id}>
+              <td style={tdStyle}>{engineer.id}</td>
+              <td style={tdStyle}>{engineer.name}</td>
+              <td style={tdStyle}>{engineer.gender}</td>
+              <td style={tdStyle}>{engineer.skill}</td>
+              <td style={tdStyle}>{engineer.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 function ProjectPage() {
@@ -56,6 +90,7 @@ function DispatchAnalysisPage() {
 }
 
 function PageContent({ currentPage }) {
+  if (currentPage === "系统主页") return <HomePage />;
   if (currentPage === "工程师管理") return <EngineerPage />;
   if (currentPage === "案件管理") return <ProjectPage />;
   if (currentPage === "派遣分配") return <DispatchPage />;
@@ -88,8 +123,27 @@ const buttonGroupStyle = {
   justifyContent: "center",
 };
 
+const tableStyle = {
+  margin: "30px auto",
+  borderCollapse: "collapse",
+  width: "80%",
+  backgroundColor: "white",
+};
+
+const thStyle = {
+  border: "1px solid #5bbccb",
+  padding: "12px",
+  backgroundColor: "#757b77",
+  fontWeight: "bold",
+};
+
+const tdStyle = {
+  border: "1px solid #2ec3f1ad",
+  padding: "12px",
+};
+
 function App() {
-  const [currentPage, setCurrentPage] = useState("home");
+  const [currentPage, setCurrentPage] = useState("HomePage");
 
   const handleMenuClick = (pageName) => {
     setCurrentPage(pageName);
