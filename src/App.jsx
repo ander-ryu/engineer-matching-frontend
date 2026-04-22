@@ -2,19 +2,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import EngineerPage from "./pages/EngineerPage";
+import ProjectPage from "./pages/ProjectPage";
 import MenuPanel from "./components/MenuPanel";
-
-
 
 function HomePage() {
   return <h2>欢迎使用派遣管理系统</h2>;
 }
 
 
-
-function ProjectPage() {
-  return <h2>这里是案件管理页面</h2>;
-}
 
 function DispatchPage() {
   return <h2>这里是派遣分配页面</h2>;
@@ -43,30 +38,6 @@ function PageContent({ currentPage }) {
 
   return <HomePage />;
 }
-
-const buttonStyle = {
-  width: "100%",
-  fontSize: "20px",
-  padding: "6px 5px",
-  borderRadius: "15px",
-  cursor: "pointer",
-};
-
-const activeButtonStyle = {
-  ...buttonStyle,
-  backgroundColor: "#333",
-  color: "white",
-  fontWeight: "bold",
-};
-
-const buttonGroupStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(7, 130px)",
-  gap: "30px",
-  justifyContent: "center",
-};
-
-
 
 function App() {
   const [currentPage, setCurrentPage] = useState("HomePage");

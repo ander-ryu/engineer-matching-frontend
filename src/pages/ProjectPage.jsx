@@ -64,8 +64,8 @@ const searchBoxStyle = {
 
 
 
-function EngineerPage() {
-    const [engineers, setEngineers] = useState([]);
+function ProjectsPage() {
+    const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [deleteMode, setDeleteMode] = useState(false);
@@ -73,42 +73,44 @@ function EngineerPage() {
     const [editingId, setEditingId] = useState(null);
     const [searchKeyword, setSearchKeyword] = useState("");
 
-    const [name, setName] = useState("");
-    const [gender, setGender] = useState("");
-    const [skill, setSkill] = useState("");
+    const [project_name, setProjectName] = useState("");
+    const [required_skill, setRequiredSkill] = useState("");
+    const [location, setLocation] = useState("");
     const [status, setStatus] = useState("");
+    const [description, setDescription] = useState("");
 
-    async function fetchEngineers() {
+    async function fetchProjects() {
         const { data, error } = await supabase
-            .from("engineers")
+            .from("projects")
             .select("*")
             .order("id", { ascending: true });
 
         if (error) {
             console.error("读取失败:", error);
         } else {
-            setEngineers(data);
+            setProjects(data);
         }
 
         setLoading(false);
     }
 
     useEffect(() => {
-        fetchEngineers();
+        fetchProjects();
     }, []);
 
-    async function handleAddEngineer() {
-        if (!name || !gender || !skill || !status) {
+    async function handleAddProject() {
+        if (!project_name || !required_skill || !location || !status || !description) {
             alert("请填写完整信息");
             return;
         }
 
-        const { error } = await supabase.from("engineers").insert([
+        const { error } = await supabase.from("projects").insert([
             {
-                name: name,
-                gender: gender,
-                skill: skill,
+                project_name: project_name,
+                required_skill: required_skill,
+                location: location,
                 status: status,
+                description: description,
             },
         ]);
 
@@ -119,25 +121,26 @@ function EngineerPage() {
 
         alert("新增成功");
 
-        setName("");
-        setGender("");
-        setSkill("");
+        setProjectName("");
+        setRequiredSkill("");
+        setLocation("");
         setStatus("");
+        setDescription("");
 
         setShowForm(false);
 
-        fetchEngineers();
+        fetchProjects();
     }
 
-    async function handleDeleteEngineer(id) {
-        const confirmed = window.confirm("确定要删除这位工程师吗？");
+    async function handleDeleteProject(id) {
+        const confirmed = window.confirm("确定要删除这个案件吗？");
 
         if (!confirmed) {
             return;
         }
 
         const { error } = await supabase
-            .from("engineers")
+            .from("projects")
             .delete()
             .eq("id", id);
 
@@ -148,31 +151,33 @@ function EngineerPage() {
 
         alert("删除成功");
 
-        fetchEngineers();
+        fetchProjects();
     }
 
-    function handleEditClick(engineer) {
-        setEditingId(engineer.id);
-        setName(engineer.name);
-        setGender(engineer.gender);
-        setSkill(engineer.skill);
-        setStatus(engineer.status);
+    function handleEditClick(project) {
+        setEditingId(project.id);
+        setProjectName(project.project_name);
+        setRequiredSkill(project.required_skill);
+        setLocation(project.location);
+        setStatus(project.status);
+        setDescription(project.description);
         setShowForm(true);
     }
 
-    async function handleUpdateEngineer() {
-        if (!name || !gender || !skill || !status) {
+    async function handleUpdateProject() {
+        if (!project_name || !required_skill || !location || !status || !description) {
             alert("请填写完整信息");
             return;
         }
 
         const { error } = await supabase
-            .from("engineers")
+            .from("projects")
             .update({
-                name,
-                gender,
-                skill,
+                project_name,
+                required_skill,
+                location,
                 status,
+                description,
             })
             .eq("id", editingId);
 
@@ -183,22 +188,23 @@ function EngineerPage() {
 
         alert("修改成功");
 
-        setName("");
-        setGender("");
-        setSkill("");
+        setProjectName("");
+        setRequiredSkill("");
+        setLocation("");
         setStatus("");
+        setDescription("");
         setShowForm(false);
         setEditMode(false);
         setEditingId(null);
 
-        fetchEngineers();
+        fetchProjects();
     }
 
     if (loading) {
         return <h2>加载中...</h2>;
     }
 
-    const filteredEngineers = engineers.filter((engineer) => {
+    const filteredProjects = projects.filter((project) => {
         const keyword = searchKeyword.trim().toLowerCase();
 
         if (!keyword) {
@@ -206,24 +212,26 @@ function EngineerPage() {
         }
 
         return (
-            engineer.name.toLowerCase().includes(keyword) ||
-            engineer.skill.toLowerCase().includes(keyword) ||
-            engineer.status.toLowerCase().includes(keyword)
+            project.project_name.toLowerCase().includes(keyword) ||
+            project.required_skill.toLowerCase().includes(keyword) ||
+            project.location.toLowerCase().includes(keyword) ||
+            project.status.toLowerCase().includes(keyword) ||
+            project.description.toLowerCase().includes(keyword)
         );
     });
 
     return (
         <div>
-            <h2>工程师管理页面（数据库数据）</h2>
+            <h2>案件管理页面（数据库数据）</h2>
             {!showForm && (
                 <button style={addButtonStyle} onClick={() => setShowForm(true)}>
-                    新增工程师
+                    新增案件
                 </button>
             )}
 
             {!deleteMode ? (
                 <button style={addButtonStyle} onClick={() => setDeleteMode(true)}>
-                    删除工程师
+                    删除案件
                 </button>
             ) : (
                 <button style={addButtonStyle} onClick={() => setDeleteMode(false)}>
@@ -240,7 +248,7 @@ function EngineerPage() {
                         setShowForm(false);
                     }}
                 >
-                    修改工程师
+                    修改案件
                 </button>
             ) : (
                 <button
@@ -249,10 +257,11 @@ function EngineerPage() {
                         setEditMode(false);
                         setEditingId(null);
                         setShowForm(false);
-                        setName("");
-                        setGender("");
-                        setSkill("");
+                        setProjectName("");
+                        setRequiredSkill("");
+                        setLocation("");
                         setStatus("");
+                        setDescription("");
                         setEditMode(false);
                     }}
                 >
@@ -265,25 +274,25 @@ function EngineerPage() {
                     <input
                         style={inputStyle}
                         type="text"
-                        placeholder="姓名"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        placeholder="案件名"
+                        value={project_name}
+                        onChange={(e) => setProjectName(e.target.value)}
                     />
 
                     <input
                         style={inputStyle}
                         type="text"
-                        placeholder="性别"
-                        value={gender}
-                        onChange={(e) => setGender(e.target.value)}
+                        placeholder="所需技能"
+                        value={required_skill}
+                        onChange={(e) => setRequiredSkill(e.target.value)}
                     />
 
                     <input
                         style={inputStyle}
                         type="text"
-                        placeholder="技能"
-                        value={skill}
-                        onChange={(e) => setSkill(e.target.value)}
+                        placeholder="地点"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
                     />
 
                     <input
@@ -294,9 +303,17 @@ function EngineerPage() {
                         onChange={(e) => setStatus(e.target.value)}
                     />
 
+                    <input
+                        style={inputStyle}
+                        type="text"
+                        placeholder="说明"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+
                     <button
                         style={addButtonStyle}
-                        onClick={editingId ? handleUpdateEngineer : handleAddEngineer}
+                        onClick={editingId ? handleUpdateProject : handleAddProject}
                     >
                         {editingId ? "保存修改" : "提交"}
                     </button>
@@ -311,7 +328,7 @@ function EngineerPage() {
                 <input
                     style={inputStyle}
                     type="text"
-                    placeholder="输入姓名 / 技能 / 状态查询"
+                    placeholder="输入案件名 / 所需技能 / 地点 / 状态查询"
                     value={searchKeyword}
                     onChange={(e) => setSearchKeyword(e.target.value)}
                 />
@@ -321,26 +338,28 @@ function EngineerPage() {
                 <thead>
                     <tr>
                         <th style={thStyle}>编号</th>
-                        <th style={thStyle}>姓名</th>
-                        <th style={thStyle}>性别</th>
-                        <th style={thStyle}>技能</th>
+                        <th style={thStyle}>案件名</th>
+                        <th style={thStyle}>要求技能</th>
+                        <th style={thStyle}>地点</th>
                         <th style={thStyle}>状态</th>
+                        <th style={thStyle}>说明</th>
                         <th style={thStyle}>操作</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredEngineers.map((engineer) => (
-                        <tr key={engineer.id}>
-                            <td style={tdStyle}>{engineer.id}</td>
-                            <td style={tdStyle}>{engineer.name}</td>
-                            <td style={tdStyle}>{engineer.gender}</td>
-                            <td style={tdStyle}>{engineer.skill}</td>
-                            <td style={tdStyle}>{engineer.status}</td>
+                    {filteredProjects.map((project) => (
+                        <tr key={project.id}>
+                            <td style={tdStyle}>{project.id}</td>
+                            <td style={tdStyle}>{project.project_name}</td>
+                            <td style={tdStyle}>{project.required_skill}</td>
+                            <td style={tdStyle}>{project.location}</td>
+                            <td style={tdStyle}>{project.status}</td>
+                            <td style={tdStyle}>{project.description}</td>
                             <td style={tdStyle}>
                                 {deleteMode && (
                                     <button
                                         style={deleteButtonStyle}
-                                        onClick={() => handleDeleteEngineer(engineer.id)}
+                                        onClick={() => handleDeleteProject(project.id)}
                                     >
                                         删除
                                     </button>
@@ -349,7 +368,7 @@ function EngineerPage() {
                                 {editMode && (
                                     <button
                                         style={deleteButtonStyle}
-                                        onClick={() => handleEditClick(engineer)}
+                                        onClick={() => handleEditClick(project)}
                                     >
                                         修改
                                     </button>
@@ -363,4 +382,4 @@ function EngineerPage() {
     );
 }
 
-export default EngineerPage;
+export default ProjectsPage;
